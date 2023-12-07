@@ -1,36 +1,16 @@
-global
-    log /dev/log local0
-    log /dev/log local1 notice
-    chroot /var/lib/haproxy
-    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
-    stats timeout 30s
-    user haproxy
-    group haproxy
-    daemon
-defaults
-    log     global
-    mode    http
-    option  httplog
+#!/usr/bin/env bash
+# Takes a subdomain and a domain and returns information about the subdomain
 
-frontend web-servers
-    bind *:80
-    default_backend app-servers
+print_info () {
+    dig "$1" | grep -A1 'ANSWER SECTION:' | sed -r "s/$1./$2/g" | awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
+}
 
-backend app-servers
-    balance roundrobin
-    server 330106-web-01 54.144.149.55:80 check
-    server 330106-web-02 35.175.135.127:80 check
-
-#--jumaongoro.tech params----begining
-frontend  jumaongoro.tech-https-frontend
-        bind *:80
-        bind *:443 ssl crt /etc/ssl/certs/fullchain.pem
-        mode http
-        default_backend jumaongoro.tech-backend
-
-
-backend jumaongoro.tech-backend
-        balance roundrobin
-        server 330106-web-01 54.144.149.55:80 check
-        server 330106-web-02 35.175.135.127:80 check
-# end of parameters
+if [ "$#" -eq 2 ]
+then
+    print_info "$2.$1" "$2"
+else
+    print_info "www.$1" "www"
+    print_info "lb-01.$1" "lb-01"
+    print_info "web-01.$1" "web-01"
+    print_info "web-02.$1" "web-02"
+fi
