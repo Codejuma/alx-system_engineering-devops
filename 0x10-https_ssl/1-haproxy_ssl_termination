@@ -12,12 +12,12 @@ backend app-servers
     server 330106-web-01 54.144.149.55:80 check
     server 330106-web-02 35.175.135.127:80 check
 
-#--masikastephy.tech params----begining
-frontend  masikastephy.tech-https-frontend
+#--jumaongoro.tech params----begining
+frontend  jumaongoro.tech-https-frontend
         bind *:80
         bind *:443 ssl crt /etc/ssl/certs/masika.pem
         mode http
-        default_backend masikastephy.tech-backend
+        default_backend jumaongoro.tech-backend
 
 
 backend masikastephy.tech-backend
