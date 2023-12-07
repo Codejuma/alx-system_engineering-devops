@@ -20,7 +20,7 @@ frontend  jumaongoro.tech-https-frontend
         default_backend jumaongoro.tech-backend
 
 
-backend masikastephy.tech-backend
+backend jumaongoro.tech-backend
         balance roundrobin
         server 330106-web-01 54.144.149.55:80 check
         server 330106-web-02 35.175.135.127:80 check
