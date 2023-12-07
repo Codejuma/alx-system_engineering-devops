@@ -13,9 +13,9 @@ backend app-servers
     server 53461-web-02 54.236.26.189:80 check
 
 #--masikastephy.tech params----begining
-frontend  masikastephy.tech-https-frontend
+frontend  jumaongoro.tech-https-frontend
         bind *:80
-        bind *:443 ssl crt /etc/ssl/certs/masika.pem
+        bind *:443 ssl crt /etc/ssl/certs/fullchain.pem
         http-request redirect scheme https code 301 unless { ssl_fc }
         default_backend jumaongoro.tech-backend
 
