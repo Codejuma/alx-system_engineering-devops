@@ -1,16 +1,40 @@
-#!/usr/bin/env bash
-# Takes a subdomain and a domain and returns information about the subdomain
+global
+    log     /dev/log local0
+    maxconn 2048
+    user    haproxy
+    group   haproxy
+    tune.ssl.default-dh-param 2048
 
-print_info () {
-    dig "$1" | grep -A1 'ANSWER SECTION:' | sed -r "s/$1./$2/g" | awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
-}
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    retries 3
+    option  redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+    option  forwardfor
+    option  http-server-close
 
-if [ "$#" -eq 2 ]
-then
-    print_info "$2.$1" "$2"
-else
-    print_info "www.$1" "www"
-    print_info "lb-01.$1" "lb-01"
-    print_info "web-01.$1" "web-01"
-    print_info "web-02.$1" "web-02"
-fi
+frontend www-http
+    bind   0.0.0.0:80
+    reqadd X-Forwarded-Proto:\ http
+    default_backend www-backend
+
+frontend www-https
+    bind   0.0.0.0:443 ssl crt /etc/haproxy/certs/www.bdbnb.site.pem
+    reqadd X-Forwarded-Proto:\ https
+    acl    letsencrypt-acl path_beg /.well-known/acme-challenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
+    default_backend www-backend
+
+backend www-backend
+    balance  roundrobin
+    redirect scheme https if !{ ssl_fc }
+    server 330106-web-01 54.144.149.55:80 check
+    server 330106-web-02 35.175.135.127:80 check
+
+backend letsencrypt-backend
+    server letsencrypt 127.0.0.1:54321
