@@ -15,7 +15,7 @@ backend app-servers
 #--jumaongoro.tech params----begining
 frontend  jumaongoro.tech-https-frontend
         bind *:80
-        bind *:443 ssl crt /etc/ssl/certs/masika.pem
+        bind *:443 ssl crt /etc/ssl/certs/ongoro.pem
         mode http
         default_backend jumaongoro.tech-backend
 
