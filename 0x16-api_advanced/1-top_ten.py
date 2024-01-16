@@ -9,14 +9,14 @@ the function should return None.
 import requests
 
 
-def recurse(subreddit, hot_list=[], after=""):
+def get_top_ten(subreddit, hot_list=[], after=""):
     """
     Queries the Reddit API and returns
     a list containing the titles of all hot articles for a given subreddit.
 
     - If not a valid subreddit, return None.
     """
-    req = requests.get(
+    url = requests.get(
         "https://www.reddit.com/r/{}/hot.json".format(subreddit),
         headers={"User-Agent": "Custom"},
         params={"after": after},
